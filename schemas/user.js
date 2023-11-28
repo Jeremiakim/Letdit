@@ -11,8 +11,18 @@ const typeDefs = `#graphql
         password: String!
         email: String!
     }
+    type UserWithName{
+        name: String
+    }
+
 
     input Register {
+        name: String!
+        username: String!
+        password: String!
+        email: String!
+    }
+    input Login {
         name: String!
         username: String!
         password: String!
@@ -21,10 +31,11 @@ const typeDefs = `#graphql
 
     type Query {
         users: ResponseUser
+        login(input: Login): ResponseLogin
     }
 
     type Mutation {
-        register(input: Register):  ResponseRegister
+        register(input: Register): ResponseRegister
     }
 
 `;
@@ -43,27 +54,20 @@ const resolvers = {
         console.log(error);
       }
     },
+    login: async () => {},
   },
   Mutation: {
     register: async (_, args) => {
       const { input } = args;
       const { name, username, password, email } = input;
       try {
-        const database = getDatabase();
-        const usersCollection = database.collection("Users");
-        const register = await usersCollection.insertOne({
-          name,
-          username,
-          password,
-          email,
-        });
-        const user = await usersCollection.findOne({
-          _id: new ObjectId(register.insertedId),
-        });
+        const data = await User.createUser(name, username, password, email);
+
+        // console.log(user);
         return {
           statusCode: 200,
           message: `Successfully create new users`,
-          data: user,
+          data,
         };
       } catch (error) {
         console.log(error);

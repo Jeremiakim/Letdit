@@ -14,6 +14,12 @@ const typeDefs = `#graphql
         statusCode: Int!
         message: String
         error: String
+        data: UserWithName
+  }
+    type ResponseLogin implements Response {
+        statusCode: Int!
+        message: String
+        error: String
         data: User
   }
 `;

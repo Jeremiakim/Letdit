@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { getDatabase } = require("../config/db");
+const { hashPassword } = require("../helpers/bcrypt");
 
 class User {
   static collection() {
@@ -21,6 +22,22 @@ class User {
     });
 
     return user;
+  }
+
+  static async createUser(name, username, password, email) {
+    try {
+      const register = await this.collection().insertOne({
+        name,
+        username,
+        password: hashPassword(password),
+        email,
+      });
+      const user = await this.findOneUser(register.insertedId);
+      console.log(user);
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
