@@ -5,6 +5,7 @@ const uri = process.env.MONGO_URI;
 
 const client = new MongoClient(uri);
 const dbName = "Letdit";
+// console.log(dbName);
 
 async function connect() {
   try {
