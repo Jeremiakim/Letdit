@@ -77,6 +77,13 @@ const typeDefs = `#graphql
         error: String
         data: Posts
     }
+
+    type ResponseUserUserDetail implements Response {
+        statusCode: Int!
+        message: String
+        error: String
+        data: UserDetail
+    }
 `;
 
 module.exports = {

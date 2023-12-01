@@ -12,8 +12,21 @@ const typeDefs = `#graphql
         email: String!
     }
     
+    type UserDetail{
+        _id: ID
+        username: String!
+        email: String!
+        followers:[FollowInfo]
+        following:[FollowInfo]
+    }
+    
     type UserWithName{
         name: String
+    }
+
+    type FollowInfo{
+        _id: ID 
+        username: String
     }
 
 
@@ -28,6 +41,7 @@ const typeDefs = `#graphql
         users: ResponseUser
         login(username:String!, password:String!): ResponseLogin
         user(id: ID!): ResponseUserById
+        followDetail(id:ID!): ResponseUserUserDetail
     }
 
     type Mutation {
@@ -52,7 +66,6 @@ const resolvers = {
     user: async (_, { id }) => {
       try {
         const user = await User.findOneUser(id);
-        // console.log(user);
         return {
           statusCode: 200,
           message: `Successfully retrieved users data`,
@@ -75,6 +88,19 @@ const resolvers = {
         };
       } catch (error) {
         throw new GraphQLError("Failed To Login");
+      }
+    },
+    followDetail: async (_, args) => {
+      const { id } = args;
+      try {
+        const data = await User.findOneId(id);
+        return {
+          statusCode: 200,
+          message: `Successfully retrieved users data`,
+          data,
+        };
+      } catch (error) {
+        console.log(error);
       }
     },
   },

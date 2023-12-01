@@ -13,7 +13,6 @@ class User {
 
   static async findAllUsers() {
     const users = await this.collection().find({}).toArray();
-    // console.log(users, 14);
     return users;
   }
 
@@ -69,6 +68,77 @@ class User {
       return token;
     } catch (error) {
       throw new GraphQLError("Failed To Login");
+    }
+  }
+  static async findOneId(id) {
+    try {
+      const [user] = await this.collection()
+        .aggregate([
+          { $match: { _id: new ObjectId(id) } },
+          {
+            $lookup: {
+              from: "Follows",
+              localField: "_id",
+              foreignField: "followingId",
+              as: "followers",
+            },
+          },
+          {
+            $lookup: {
+              from: "Follows",
+              localField: "_id",
+              foreignField: "followerId",
+              as: "following",
+            },
+          },
+          {
+            $lookup: {
+              from: "Users",
+              localField: "followers.followingId",
+              foreignField: "_id",
+              as: "FollowerDetails",
+            },
+          },
+          {
+            $lookup: {
+              from: "Users",
+              localField: "following.followingId",
+              foreignField: "_id",
+              as: "FollowingDetails",
+            },
+          },
+          {
+            $project: {
+              username: 1,
+              email: 1,
+              followers: {
+                $map: {
+                  input: "$FollowerDetails",
+                  as: "fd",
+                  in: {
+                    _id: "$$fd._id",
+                    username: "$$fd.username",
+                  },
+                },
+              },
+              following: {
+                $map: {
+                  input: "$FollowingDetails",
+                  as: "fd",
+                  in: {
+                    _id: "$$fd._id",
+                    username: "$$fd.username",
+                  },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      // console.log(user, 79);
+      return user;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

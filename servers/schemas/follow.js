@@ -28,7 +28,7 @@ const resolvers = {
     follow: async (_, args, contextValue) => {
       const { input } = args;
       const { userId } = await contextValue.doAuthentication();
-      if (input.followingId === userId.toString()) {
+      if (input.followingId.toString() === userId.toString()) {
         throw new GraphQLError("Cannot follow this account");
       }
       const data = await Follow.createFollow(input, userId);
