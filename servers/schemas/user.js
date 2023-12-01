@@ -11,19 +11,7 @@ const typeDefs = `#graphql
         password: String!
         email: String!
     }
-
-    type Follow{
-        _id: ID
-        followingId: ID
-        followerId: ID
-        createdAt: String
-        updatedAt:String
-    }
-
-    input CreateFollowing{
-        followingId: ID
-    }
-
+    
     type UserWithName{
         name: String
     }
@@ -44,7 +32,6 @@ const typeDefs = `#graphql
 
     type Mutation {
         register(input: Register): ResponseRegister
-        follow(input: CreateFollowing): ResponseFollow
     }
 `;
 
@@ -63,7 +50,6 @@ const resolvers = {
       }
     },
     user: async (_, { id }) => {
-      console.log(id, 52);
       try {
         const user = await User.findOneUser(id);
         // console.log(user);
@@ -106,16 +92,6 @@ const resolvers = {
       } catch (error) {
         throw new GraphQLError("Failed To Register");
       }
-    },
-    follow: async (_, args, contextValue) => {
-      const { input } = args;
-      const { userId } = await contextValue.doAuthentication();
-      const data = await User.createFollow(input, userId);
-      return {
-        statusCode: 200,
-        message: `Success to follow`,
-        data: data,
-      };
     },
   },
 };

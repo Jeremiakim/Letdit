@@ -7,10 +7,11 @@ const { userTypeDefs, usersResolvers } = require("./schemas/user");
 const { responseTypeDefs } = require("./schemas/response");
 const authentication = require("./helpers/AuthN");
 const { postTypeDefs, postResolvers } = require("./schemas/post");
+const { followTypeDefs, followsResolvers } = require("./schemas/follow");
 
 const server = new ApolloServer({
-  typeDefs: [userTypeDefs, responseTypeDefs, postTypeDefs],
-  resolvers: [usersResolvers, postResolvers],
+  typeDefs: [userTypeDefs, responseTypeDefs, postTypeDefs, followTypeDefs],
+  resolvers: [usersResolvers, postResolvers, followsResolvers],
 });
 
 (async () => {
@@ -19,7 +20,7 @@ const server = new ApolloServer({
     const { url } = await startStandaloneServer(server, {
       listen: { port },
       context: async ({ req, res }) => {
-        console.log("Context get triggered");
+        // console.log("Context get triggered");
         return {
           doAuthentication: async () => await authentication(req),
         };

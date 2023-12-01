@@ -71,27 +71,6 @@ class User {
       throw new GraphQLError("Failed To Login");
     }
   }
-  static async createFollow(input, userId) {
-    const database = getDatabase();
-    const followsCollection = database.collection("Follows");
-
-    try {
-      const follow = await followsCollection.insertOne({
-        followingId: input.followingId,
-        followerId: userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      const findUserFollowing = await followsCollection.findOne({
-        _id: new ObjectId(follow.insertedId),
-      });
-      // console.log(findUserFollowing);
-      return findUserFollowing;
-    } catch (error) {
-      console.log(error);
-    }
-  }
 }
 
 module.exports = User;

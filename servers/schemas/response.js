@@ -44,10 +44,38 @@ const typeDefs = `#graphql
         data: Follow
     }
 
+    type ResponsePosts implements Response {
+        statusCode: Int!
+        message: String
+        error: String
+        data: [Posts]
+    }
+
+    type ResponsePost implements Response {
+        statusCode: Int!
+        message: String
+        error: String
+        data: Posts
+    }
+
     type ResponseAddpost implements Response {
         statusCode: Int!
         message: String
         error: String
+    }
+
+    type ResponseComment implements Response {
+        statusCode: Int!
+        message: String
+        error: String
+        data: Posts
+    }
+
+    type ResponseLike implements Response {
+        statusCode: Int!
+        message: String
+        error: String
+        data: Posts
     }
 `;
 

@@ -19,14 +19,12 @@ const typeDefs = `#graphql
         authorId: ID!
         createdAt: String 
         updatedAt: String
-
     }
 
     type Likes{
         authorId: ID!
         createdAt: String
         updatedAt: String
-
     }
 
     input AddPost {
@@ -35,25 +33,44 @@ const typeDefs = `#graphql
         imgUrl: String
     }
 
-    #type Query {
-    
-    #}
+    type Query {
+      readAllPosts: ResponsePosts
+      readOnePost(id: ID!): ResponsePost
+    }
     
     type Mutation {
         addPost(input: AddPost):  ResponseAddpost
+        comment(_id: ID, content:String!): ResponseComment
+        like(_id: ID ): ResponseLike
     }
 
 `;
 
 const resolvers = {
-  //   Query: {},
+  Query: {
+    readAllPosts: async () => {
+      const data = await Post.findAllPosts();
+      return {
+        statusCode: 200,
+        message: `Success to read all posts`,
+        data,
+      };
+    },
+    readOnePost: async (_, { id }) => {
+      const data = await Post.findOnePosts(id);
+      return {
+        statusCode: 200,
+        message: `Success to read post`,
+        data,
+      };
+    },
+  },
   Mutation: {
     addPost: async (_, { input }, context) => {
       const { userId } = await context.doAuthentication();
       const { content, tags, imgUrl } = input;
       try {
         const data = await Post.createPosts(content, tags, imgUrl, userId);
-        console.log(data);
 
         return {
           statusCode: 200,
@@ -62,6 +79,30 @@ const resolvers = {
       } catch (error) {
         throw new GraphQLError("Failed TO Add Post");
       }
+    },
+    comment: async (_, args, context) => {
+      const { _id, content } = args;
+      const { userId } = await context.doAuthentication();
+      const data = await Post.createComments(userId, content, _id);
+      return {
+        statusCode: 200,
+        message: `Success to comment`,
+        data,
+      };
+    },
+    like: async (_, args, context) => {
+      // console.log(args);
+      const { _id } = args;
+      const { userId } = await context.doAuthentication();
+      if (userId.toString()) {
+        throw new GraphQLError("Failed to like");
+      }
+      const data = await Post.createLikes(_id, userId);
+      return {
+        statusCode: 200,
+        message: "Success to like",
+        data,
+      };
     },
   },
 };
