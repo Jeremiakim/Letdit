@@ -14,8 +14,6 @@ function LoginScreen() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
