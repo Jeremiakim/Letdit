@@ -16,32 +16,30 @@ import { useLazyQuery } from "@apollo/client";
 import { LoginContext } from "../context/LoginContext";
 
 function LoginScreen({ navigation }) {
-  const { setIsLoggIn } = useContext(LoginContext);
+  const { setIsLoggIn, setUserId } = useContext(LoginContext);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [dispatcher, { data, loading, error }] = useLazyQuery(
-    LOGIN,
-    // !! Solution for late update / cannot await dispatcher:
-    // !! We can use callback onCompleted to get the latest data
-    {
-      onCompleted: async (res) => {
-        let token = null;
+  const [dispatcher, { data, loading, error }] = useLazyQuery(LOGIN, {
+    onCompleted: async (res) => {
+      let token = null;
+      // let userId;
 
-        if (res?.login?.data?.token) {
-          token = res.login.data.token;
-        }
+      if (res?.login?.data?.token) {
+        token = res.login.data.token;
+        userId = res.login.data.userId;
+      }
 
-        await SecureStore.setItemAsync("token", token);
-
-        // Set isLoggedIn to true
-        setIsLoggIn(true);
-      },
-      onError: (err) => {
-        console.log(err);
-      },
-    }
-  );
+      await SecureStore.setItemAsync("token", token);
+      await SecureStore.setItemAsync("userId", userId);
+      setUserId(userId);
+      fetchPolicy: "network-only";
+      setIsLoggIn(true);
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
 
   const pressLogin = async () => {
     await dispatcher({

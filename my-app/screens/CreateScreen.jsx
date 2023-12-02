@@ -10,15 +10,12 @@ function CreateScreen({ navigation }) {
   const [tags, setTags] = useState("");
 
   const [dispatcher] = useMutation(ADD_POST, {
-    // We will use onCompleted to get the returned data
     onCompleted: (res) => {
       console.log("res", res);
 
-      // We will just navigate back to the previous page
       navigation.goBack();
     },
-    // We will use refetchQueries to refetch the data from GET_COLORS
-    // This will make the data in cache updated and refetched AUTOMATICALLY
+
     refetchQueries: [
       {
         query: GET_POST,
@@ -27,9 +24,7 @@ function CreateScreen({ navigation }) {
   });
 
   const onClickAddPost = () => {
-    console.log(content, imgUrl, tags, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     if (!content || !imgUrl || !tags) {
-      // Menampilkan pesan kesalahan jika ada input yang kosong
       console.log("Harap isi semua bidang");
       return;
     }

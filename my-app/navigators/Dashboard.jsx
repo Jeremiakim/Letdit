@@ -7,10 +7,12 @@ import InboxScreen from "../screens/InboxScreen";
 import { Button } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import PostDetailScreen from "../screens/PostDetailScreen";
+import SearchScreen from "../screens/SearchScreen";
 
 const Stack = createNativeStackNavigator();
 
-function DashboardStack() {
+function DashboardStack({ navigation }) {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -31,7 +33,7 @@ function DashboardStack() {
                 backgroundColor: "white",
               }}
               onPress={() => {
-                navigation.navigate("-");
+                navigation.navigate("Search");
               }}
             >
               <AntDesign name="search1" size={21} color="black" />
@@ -54,6 +56,8 @@ function DashboardStack() {
       <Stack.Screen name={"Communities"} component={CommunitiesScreen} />
       <Stack.Screen name={"Create"} component={CreateScreen} />
       <Stack.Screen name={"Chat"} component={ChatScreen} />
+      <Stack.Screen name={"Detail"} component={PostDetailScreen} />
+      <Stack.Screen name={"Search"} component={SearchScreen} />
       <Stack.Screen name={"Inbox"} component={InboxScreen} />
     </Stack.Navigator>
   );

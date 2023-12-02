@@ -7,6 +7,7 @@ const typeDefs = `#graphql
 
     type LoginToken {
         token: String
+        userId:ID
     }
 
     type ResponseUser implements Response {
@@ -16,7 +17,7 @@ const typeDefs = `#graphql
         data: [User]
     }
 
-    type ResponseUserById implements Response {
+    type ResponseUsername implements Response {
         statusCode: Int!
         message: String
         error: String

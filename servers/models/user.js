@@ -16,9 +16,9 @@ class User {
     return users;
   }
 
-  static async findOneUser(id) {
+  static async findOneByUsername(username) {
     const user = await this.collection().findOne({
-      _id: new ObjectId(id),
+      username,
     });
 
     return user;
@@ -65,7 +65,10 @@ class User {
       };
 
       const token = createToken(payload);
-      return token;
+      return {
+        token,
+        userId: payload.id,
+      };
     } catch (error) {
       throw new GraphQLError("Failed To Login");
     }
@@ -109,6 +112,7 @@ class User {
           },
           {
             $project: {
+              name: 1,
               username: 1,
               email: 1,
               followers: {

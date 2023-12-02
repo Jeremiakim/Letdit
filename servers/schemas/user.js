@@ -14,8 +14,9 @@ const typeDefs = `#graphql
     
     type UserDetail{
         _id: ID
-        username: String!
-        email: String!
+        name:String
+        username: String
+        email: String
         followers:[FollowInfo]
         following:[FollowInfo]
     }
@@ -40,8 +41,8 @@ const typeDefs = `#graphql
     type Query {
         users: ResponseUser
         login(username:String!, password:String!): ResponseLogin
-        user(id: ID!): ResponseUserById
-        followDetail(id:ID!): ResponseUserUserDetail
+        user(username:String!): ResponseUsername
+        followDetail(id:ID): ResponseUserUserDetail
     }
 
     type Mutation {
@@ -63,9 +64,9 @@ const resolvers = {
         console.log(error);
       }
     },
-    user: async (_, { id }) => {
+    user: async (_, { username }) => {
       try {
-        const user = await User.findOneUser(id);
+        const user = await User.findOneByUsername(username);
         return {
           statusCode: 200,
           message: `Successfully retrieved users data`,
@@ -78,22 +79,32 @@ const resolvers = {
     login: async (_, args) => {
       const { username, password } = args;
       try {
-        const token = await User.findUserByUsername(username, password);
+        const { token, userId } = await User.findUserByUsername(
+          username,
+          password
+        );
         return {
           statusCode: 501,
           message: "A token",
           data: {
             token,
+            userId,
           },
         };
       } catch (error) {
         throw new GraphQLError("Failed To Login");
       }
     },
-    followDetail: async (_, args) => {
+    followDetail: async (_, args, contextValue) => {
+      const { userId } = await contextValue.doAuthentication();
       const { id } = args;
       try {
-        const data = await User.findOneId(id);
+        let data;
+        if (id) {
+          data = await User.findOneId(id);
+        } else {
+          data = await User.findOneId(userId);
+        }
         return {
           statusCode: 200,
           message: `Successfully retrieved users data`,
@@ -107,6 +118,7 @@ const resolvers = {
   Mutation: {
     register: async (_, args) => {
       const { input } = args;
+      // console.log(input);
       const { name, username, password, email } = input;
       try {
         const data = await User.createUser(name, username, password, email);
