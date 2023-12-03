@@ -49,7 +49,8 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Query: {
-    readAllPosts: async () => {
+    readAllPosts: async (_, args, context) => {
+      const { userId } = await context.doAuthentication();
       const postCache = await redis.get("data:posts");
       if (postCache) {
         return {
@@ -66,7 +67,8 @@ const resolvers = {
         data,
       };
     },
-    readOnePost: async (_, { id }) => {
+    readOnePost: async (_, { id }, context) => {
+      const { userId } = await context.doAuthentication();
       const data = await Post.findOnePosts(id);
       return {
         statusCode: 200,
@@ -81,6 +83,7 @@ const resolvers = {
       const { content, tags, imgUrl } = input;
       try {
         const data = await Post.createPosts(content, tags, imgUrl, userId);
+        await redis.del("data:posts");
 
         return {
           statusCode: 200,
@@ -98,8 +101,6 @@ const resolvers = {
         }
         const { userId } = await context.doAuthentication();
         const data = await Post.createComments(userId, content, _id);
-
-        await redis.del("data:posts");
 
         return {
           statusCode: 200,

@@ -52,8 +52,10 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Query: {
-    users: async () => {
+    users: async (_, args, context) => {
+      const { userId } = await context.doAuthentication();
       try {
+        const { userId } = await context.doAuthentication();
         const user = await User.findAllUsers();
         return {
           statusCode: 200,
@@ -64,7 +66,8 @@ const resolvers = {
         console.log(error);
       }
     },
-    user: async (_, { username }) => {
+    user: async (_, { username }, context) => {
+      const { userId } = await context.doAuthentication();
       try {
         if (!username) {
           throw new GraphQLError("Please input your searching");
