@@ -46,7 +46,7 @@ const ProfileScreen = () => {
   }
 
   const userData = data.followDetail.data;
-
+  console.log(userData);
   return (
     <View style={styles.container}>
       <View style={styles.profileHeader}>

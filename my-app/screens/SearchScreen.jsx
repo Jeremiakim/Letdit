@@ -6,6 +6,7 @@ import { useState } from "react";
 
 function SearchScreen() {
   const [username, setUsername] = useState("");
+  const [errorFollow, setErrorFollow] = useState(null);
   const [dispatcher, { loading, error, data }] = useLazyQuery(FIND_USER, {
     onCompleted: (result) => {
       console.log(result);
@@ -14,6 +15,14 @@ function SearchScreen() {
       console.log(error);
     },
   });
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
   const pressSearch = async () => {
     await dispatcher({
       variables: {
@@ -30,13 +39,16 @@ function SearchScreen() {
         query: GET_USER_DETAIL,
       },
     ],
+    fetchPolicy: "network-only",
     onError: (error) => {
       console.log(error);
+      setErrorFollow("You Cannot Follow this Acccount");
     },
   });
   const [id, setId] = useState("");
   const pressFollow = async () => {
     setId(data?.user?.data?._id);
+    setErrorFollow(null);
     await follow({
       variables: {
         input: {
@@ -83,6 +95,11 @@ function SearchScreen() {
           <Text style={styles.errorText}>
             {error ? `${error.message}` : "Found The User"}
           </Text>
+        </View>
+      )}
+      {errorFollow && (
+        <View style={styles.container}>
+          <Text style={styles.errorText}>{errorFollow}</Text>
         </View>
       )}
     </>

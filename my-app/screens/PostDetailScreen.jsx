@@ -1,17 +1,20 @@
-import { GET_POST_DETAIL } from "../queries";
+import { COMMENT, GET_POST_DETAIL, LIKE } from "../queries";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button, Card } from "react-native-paper";
+import { Button, Card, TextInput } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { Entypo } from "@expo/vector-icons";
+
 function PostDetailScreen({ route }) {
   const params = route.params;
   const [arrowUp, setArrowUp] = useState(false);
   const [arrowDown, setArrowDown] = useState(false);
+  const [content, setContent] = useState("");
+
   const { loading, error, data } = useQuery(GET_POST_DETAIL, {
     variables: {
       readOnePostId: params.id,
@@ -25,17 +28,59 @@ function PostDetailScreen({ route }) {
     fetchPolicy: "network-only",
   });
 
-  const onClickLikeUp = () => {
-    console.log("hello");
-    setArrowUp(true);
-    console.log(arrowUp);
-  };
   const onClickLikeDown = () => {
     console.log("hello");
     setArrowDown(true);
     console.log(arrowUp);
   };
-
+  const [comment] = useMutation(COMMENT, {
+    onCompleted: (result) => {
+      console.log(result);
+    },
+    refetchQueries: [
+      {
+        query: GET_POST_DETAIL,
+      },
+    ],
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const [id, setId] = useState("");
+  const pressComment = async () => {
+    setId(data?.readOnePost?.data?._id);
+    await comment({
+      variables: {
+        id,
+        content,
+      },
+    });
+  };
+  const [like] = useMutation(LIKE, {
+    onCompleted: (result) => {
+      console.log(result);
+    },
+    refetchQueries: [
+      {
+        query: GET_POST_DETAIL,
+      },
+    ],
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const onClickLikeUp = async () => {
+    setId(data?.readOnePost?.data?._id);
+    await like({
+      variables: {
+        id,
+      },
+    });
+    console.log("hello");
+    setArrowUp(true);
+    console.log(arrowUp);
+  };
+  console.log(data?.readOnePost?.data?.likes, 85);
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
       {data && (
@@ -75,7 +120,7 @@ function PostDetailScreen({ route }) {
                       {<AntDesign name="arrowup" size={18} color="black" />}
                     </Button>
                   )}
-
+                  <Text>{data?.readOnePost?.data?.likes.length}</Text>
                   {arrowDown ? (
                     <Button
                       labelStyle={{ fontSize: 12 }}
@@ -127,6 +172,24 @@ function PostDetailScreen({ route }) {
               </Card>
             );
           })}
+          <View style={styles.container}>
+            <View style={styles.formContainer}>
+              <TextInput
+                style={styles.inputComment}
+                mode="outlined"
+                label="Comment Here"
+                placeholder="Input Your Comment"
+                onChangeText={setContent}
+              />
+              <Button
+                style={styles.buttonComment}
+                mode="contained"
+                onPress={pressComment}
+              >
+                Post
+              </Button>
+            </View>
+          </View>
         </>
       )}
     </ScrollView>
@@ -137,6 +200,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+  },
+  formContainer: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingContainer: {
     flex: 1,
@@ -174,6 +242,16 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#ccc",
     paddingTop: 15,
+  },
+  buttonComment: {
+    width: 90,
+    height: 40,
+    backgroundColor: "red",
+  },
+  inputComment: {
+    width: 250,
+    marginBottom: 20,
+    backgroundColor: "#F0F0F0",
   },
   buttonsContainer: {
     width: "100%",

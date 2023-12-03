@@ -165,3 +165,63 @@ export const FOLLOW = gql`
     }
   }
 `;
+
+export const LIKE = gql`
+  mutation Like($id: ID) {
+    like(_id: $id) {
+      statusCode
+      message
+      error
+      data {
+        _id
+        content
+        tags
+        imgUrl
+        authorId
+        comments {
+          content
+          authorId
+          createdAt
+          updatedAt
+        }
+        likes {
+          authorId
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+export const COMMENT = gql`
+  mutation Comment($content: String!, $id: ID) {
+    comment(content: $content, _id: $id) {
+      statusCode
+      message
+      error
+      data {
+        _id
+        content
+        tags
+        imgUrl
+        authorId
+        comments {
+          content
+          authorId
+          createdAt
+          updatedAt
+        }
+        likes {
+          authorId
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
