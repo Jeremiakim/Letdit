@@ -6,10 +6,23 @@ import ChatScreen from "../screens/ChatScreen";
 import InboxScreen from "../screens/InboxScreen";
 import DashboardStack from "./Dashboard";
 import ProfileScreen from "../screens/ProfileScreen";
+import { Button } from "react-native-paper";
+import { LoginContext } from "../context/LoginContext";
+import { useContext } from "react";
 
 const Tab = createBottomTabNavigator();
 
 function MainTab({ styles }) {
+  const { setIsLoggIn } = useContext(LoginContext);
+
+  const OnPressLogOut = async () => {
+    console.log("Log Out press");
+    await SecureStore.deleteItemAsync("token");
+
+    setIsLoggIn(false);
+    console.log(setIsLoggIn);
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -30,7 +43,7 @@ function MainTab({ styles }) {
           headerShown: false,
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name={"Communities"}
         // component={HomeScreen}
         component={CommunitiesScreen}
@@ -39,19 +52,6 @@ function MainTab({ styles }) {
             const iconName = focused
               ? "people-circle"
               : "people-circle-outline";
-            return <Ionicons name={iconName} color={color} size={size} />;
-          },
-        }}
-      /> */}
-      <Tab.Screen
-        name={"Chat"}
-        // component={HomeScreen}
-        component={ChatScreen}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => {
-            const iconName = focused
-              ? "chatbubble-ellipses"
-              : "chatbubble-ellipses-outline";
             return <Ionicons name={iconName} color={color} size={size} />;
           },
         }}
@@ -68,6 +68,19 @@ function MainTab({ styles }) {
         }}
       />
       <Tab.Screen
+        name={"Chat"}
+        // component={HomeScreen}
+        component={ChatScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => {
+            const iconName = focused
+              ? "chatbubble-ellipses"
+              : "chatbubble-ellipses-outline";
+            return <Ionicons name={iconName} color={color} size={size} />;
+          },
+        }}
+      />
+      <Tab.Screen
         name={"Inbox"}
         // component={HomeScreen}
         component={InboxScreen}
@@ -78,7 +91,7 @@ function MainTab({ styles }) {
           },
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name={"Profile"}
         // component={HomeScreen}
         component={ProfileScreen}
@@ -89,8 +102,24 @@ function MainTab({ styles }) {
               : "ios-person-circle-outline";
             return <Ionicons name={iconName} color={color} size={size} />;
           },
+          headerRight: () => (
+            <Button
+              style={{
+                backgroundColor: "white",
+              }}
+              labelStyle={{
+                color: "gray",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+              onPress={OnPressLogOut}
+            >
+              Log Out
+            </Button>
+          ),
+          title: "Profile",
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 }

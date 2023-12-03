@@ -1,13 +1,32 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useQuery } from "@apollo/client";
 import { GET_USER_DETAIL } from "../queries/index";
 import { LoginContext } from "../context/LoginContext";
+import { Button, Modal } from "react-native-paper";
+import * as SecureStore from "expo-secure-store";
 
 const ProfileScreen = () => {
-  const { userId } = useContext(LoginContext);
+  const { setIsLoggIn } = useContext(LoginContext);
+  const [showModal, setShowModal] = useState(false);
+  const OnPressLogOut = () => {
+    // Tampilkan modal konfirmasi saat logout ditekan
+    setShowModal(true);
+  };
+
+  const handleLogoutConfirmed = async () => {
+    // Hapus token atau lakukan tindakan logout di sini
+    console.log("Logging out...");
+    await SecureStore.deleteItemAsync("token");
+    setIsLoggIn(false);
+    setShowModal(false); // Tutup modal setelah logout berhasil
+  };
+
+  const handleCancelLogout = () => {
+    // Batalkan logout, sembunyikan modal
+    setShowModal(false);
+  };
   const { loading, error, data } = useQuery(GET_USER_DETAIL);
-  console.log(data?.followDetail?.data?.following.length);
   if (loading) {
     return (
       <View style={styles.container}>
@@ -46,7 +65,26 @@ const ProfileScreen = () => {
         <Text style={styles.email}>
           {userData?.following?.length} following
         </Text>
+        <Button onPress={OnPressLogOut}>Log Out</Button>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModal}
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={styles.ModalLogout}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Apakah Anda yakin ingin logout?
+            </Text>
+            <View style={styles.modalButtons}>
+              <Button onPress={handleLogoutConfirmed}>Ya</Button>
+              <Button onPress={handleCancelLogout}>Batal</Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -103,6 +141,22 @@ const styles = StyleSheet.create({
   email: {
     fontSize: 16,
     color: "gray",
+  },
+  ModalLogout: {
+    justifyContent: "center",
+    backgroundColor: "#ffffff",
+    alignItems: "center",
+    marginHorizontal: 30,
+    padding: 25,
+    borderRadius: 60,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 

@@ -9,6 +9,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import PostDetailScreen from "../screens/PostDetailScreen";
 import SearchScreen from "../screens/SearchScreen";
+import { Ionicons } from "@expo/vector-icons";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +29,7 @@ function DashboardStack({ navigation }) {
         name={"Home"}
         component={HomeScreen}
         options={{
-          headerRight: () => (
+          headerLeft: () => (
             <Button
               style={{
                 backgroundColor: "white",
@@ -39,16 +41,20 @@ function DashboardStack({ navigation }) {
               <AntDesign name="search1" size={21} color="black" />
             </Button>
           ),
-          headerLeft: () => (
+          headerRight: () => (
             <Button
               style={{
                 backgroundColor: "white",
               }}
               onPress={() => {
-                navigation.navigate("-");
+                navigation.navigate("Profile");
               }}
             >
-              <Feather name="menu" size={24} color="black" />
+              <Ionicons
+                name="ios-person-circle-outline"
+                size={22}
+                color="black"
+              />
             </Button>
           ),
         }}
@@ -59,6 +65,7 @@ function DashboardStack({ navigation }) {
       <Stack.Screen name={"Detail"} component={PostDetailScreen} />
       <Stack.Screen name={"Search"} component={SearchScreen} />
       <Stack.Screen name={"Inbox"} component={InboxScreen} />
+      <Stack.Screen name={"Profile"} component={ProfileScreen} />
     </Stack.Navigator>
   );
 }
