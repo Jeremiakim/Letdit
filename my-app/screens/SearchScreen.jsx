@@ -1,6 +1,6 @@
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { StyleSheet, Text, View } from "react-native";
-import { FIND_USER } from "../queries";
+import { FIND_USER, FOLLOW, GET_USER_DETAIL } from "../queries";
 import { Button, TextInput } from "react-native-paper";
 import { useState } from "react";
 
@@ -21,13 +21,31 @@ function SearchScreen() {
       },
     });
   };
+  const [follow] = useMutation(FOLLOW, {
+    onCompleted: (result) => {
+      console.log(result);
+    },
+    refetchQueries: [
+      {
+        query: GET_USER_DETAIL,
+      },
+    ],
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const [id, setId] = useState("");
+  const pressFollow = async () => {
+    setId(data?.user?.data?._id);
+    await follow({
+      variables: {
+        input: {
+          followingId: id,
+        },
+      },
+    });
+  };
 
-  // if (error || !data?.followDetail?.data) {
-  //   return (
-
-  //   );
-  // }
-  console.log(data?.user?.data);
   return (
     <>
       <View style={styles.container}>
@@ -48,10 +66,16 @@ function SearchScreen() {
       </View>
       {data ? (
         <View style={styles.container}>
-          <View style={styles.profileHeader}></View>
           <View style={styles.profileDetails}>
             <Text style={styles.username}>{data?.user?.data?.username}</Text>
             <Text style={styles.name}>{data?.user?.data?.name}</Text>
+            <Button
+              style={styles.buttonFolow}
+              mode="contained"
+              onPress={pressFollow}
+            >
+              Follow
+            </Button>
           </View>
         </View>
       ) : (
@@ -64,7 +88,6 @@ function SearchScreen() {
     </>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -92,17 +115,10 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: "red",
   },
-  profileHeader: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  avatarContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#FF4500",
-    marginBottom: 10,
-    // Tambahan gaya lainnya untuk avatar
+  buttonFolow: {
+    width: 130,
+    height: 40,
+    backgroundColor: "blue",
   },
   username: {
     fontSize: 24,

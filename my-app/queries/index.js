@@ -148,3 +148,20 @@ export const FIND_USER = gql`
     }
   }
 `;
+
+export const FOLLOW = gql`
+  mutation Follow($input: CreateFollowing) {
+    follow(input: $input) {
+      statusCode
+      message
+      error
+      data {
+        _id
+        followingId
+        followerId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
