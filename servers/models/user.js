@@ -20,6 +20,9 @@ class User {
     const user = await this.collection().findOne({
       username,
     });
+    if (!user) {
+      throw new GraphQLError("User Not Found");
+    }
 
     return user;
   }

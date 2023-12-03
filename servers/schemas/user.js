@@ -66,6 +66,9 @@ const resolvers = {
     },
     user: async (_, { username }) => {
       try {
+        if (!username) {
+          throw new GraphQLError("Please input your searching");
+        }
         const user = await User.findOneByUsername(username);
         return {
           statusCode: 200,
@@ -73,7 +76,7 @@ const resolvers = {
           data: user,
         };
       } catch (error) {
-        console.log(error);
+        throw new GraphQLError(error);
       }
     },
     login: async (_, args) => {
@@ -111,7 +114,7 @@ const resolvers = {
           data,
         };
       } catch (error) {
-        console.log(error);
+        throw new GraphQLError(error);
       }
     },
   },
