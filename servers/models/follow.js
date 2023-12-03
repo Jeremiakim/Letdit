@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { getDatabase } = require("../config/db");
+const { GraphQLError } = require("graphql");
 
 class Follow {
   static collection() {
@@ -11,6 +12,16 @@ class Follow {
 
   static async createFollow(input, userId) {
     try {
+      const user = await this.collection().findOne({
+        $and: [
+          { followerId: new ObjectId(userId) },
+          { followingId: new ObjectId(input.followingId) },
+        ],
+      });
+      if (user) {
+        throw new GraphQLError("You have follow this account");
+      }
+
       const follow = await this.collection().insertOne({
         followingId: new ObjectId(input.followingId),
         followerId: userId,
@@ -23,7 +34,7 @@ class Follow {
       });
       return findUserFollowing;
     } catch (error) {
-      console.log(error);
+      throw new GraphQLError(error);
     }
   }
 }

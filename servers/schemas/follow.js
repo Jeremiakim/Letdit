@@ -29,15 +29,6 @@ const resolvers = {
       try {
         const { input } = args;
         const { userId } = await contextValue.doAuthentication();
-        if (!input.followingId) {
-          throw new GraphQLError("Your not follow anyone");
-        }
-        const userDetail = await User.findOneId(userId);
-        userDetail.following.forEach((id) => {
-          if (input.followingId === id._id.toString()) {
-            throw new GraphQLError("You have follow this accounts");
-          }
-        });
         if (input.followingId.toString() === userId.toString()) {
           throw new GraphQLError("Cannot follow this account");
         }
