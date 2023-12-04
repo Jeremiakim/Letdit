@@ -76,15 +76,15 @@ function RegisterScreen({ navigation }) {
         <TextInput
           style={{ width: 250, marginBottom: 20, backgroundColor: "#F0F0F0" }}
           mode="outlined"
-          label="Name"
-          placeholder="Your Name"
+          label="Username"
+          placeholder="Your username"
           onChangeText={(text) => setUsername(text)}
         />
         <TextInput
           style={{ width: 250, marginBottom: 20, backgroundColor: "#F0F0F0" }}
           mode="outlined"
-          label="Username"
-          placeholder="Your Username"
+          label="Name"
+          placeholder="Your Name"
           onChangeText={(text) => setName(text)}
         />
         <TextInput

@@ -89,7 +89,6 @@ const resolvers = {
           username,
           password
         );
-        console.log(token);
         return {
           statusCode: 501,
           message: "A token",
@@ -99,6 +98,7 @@ const resolvers = {
           },
         };
       } catch (error) {
+        console.log(error);
         throw new GraphQLError("Failed To Login");
       }
     },

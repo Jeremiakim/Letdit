@@ -1,6 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { getDatabase } = require("../config/db");
-const { hashPassword } = require("../helpers/bcrypt");
+const { hashPassword, compareHash } = require("../helpers/bcrypt");
 const { GraphQLError } = require("graphql");
 const { createToken } = require("../helpers/jwt");
 class User {
@@ -49,7 +49,9 @@ class User {
         password: hashPassword(password),
         email,
       });
-      const user = await this.findOneUser(register.insertedId);
+      const user = await this.collection().findOne({
+        _id: new ObjectId(register.insertedId),
+      });
       return user;
     } catch (error) {
       console.log(error);
@@ -57,9 +59,10 @@ class User {
   }
   static async findUserByUsername(username, password) {
     try {
-      const user = await this.collection().findOne({ username, password });
+      const user = await this.collection().findOne({ username });
       // console.log(user);
-      if (!user || user.password !== password) {
+      // console.log(user.password, 61);
+      if (!user && !compareHash(password, user.password)) {
         throw new GraphQLError("Invalid Email Or Password");
       }
       let payload = {

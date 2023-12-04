@@ -6,25 +6,28 @@ import { useState } from "react";
 
 function SearchScreen() {
   const [username, setUsername] = useState("");
+  console.log(username);
   const [errorFollow, setErrorFollow] = useState(null);
-  const [dispatcher, { loading, error, data }] = useLazyQuery(FIND_USER, {
+  const [find, { loading, error, data }] = useLazyQuery(FIND_USER, {
     onCompleted: (result) => {
       console.log(result);
     },
     onError: (error) => {
-      console.log(error);
+      console.log(error, 100000000000);
     },
   });
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
+  // console.log(loading, 19);
+  // console.log(error, 20);
+  // console.log(data, 21);
+  // if (loading) {
+  //   return (
+  //     <View style={styles.loadingContainer}>
+  //       <Text>Loading...</Text>
+  //     </View>
+  //   );
+  // }
   const pressSearch = async () => {
-    await dispatcher({
+    await find({
       variables: {
         username,
       },
@@ -92,14 +95,14 @@ function SearchScreen() {
         </View>
       ) : (
         <View style={styles.container}>
-          <Text style={styles.errorText}>
+          <Text style={{ color: "red" }}>
             {error ? `${error.message}` : "Found The User"}
           </Text>
         </View>
       )}
       {errorFollow && (
         <View style={styles.container}>
-          <Text style={styles.errorText}>{errorFollow}</Text>
+          <Text style={{ color: "red" }}>{errorFollow}</Text>
         </View>
       )}
     </>

@@ -25,7 +25,6 @@ function HomeScreen({ navigation }) {
     setArrowDown(true);
     console.log(arrowUp);
   };
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -39,7 +38,7 @@ function HomeScreen({ navigation }) {
   }
 
   if (!loading && data) {
-    console.log(JSON.stringify(data.readAllPosts.data, null, 2));
+    // console.log(JSON.stringify(data.readAllPosts.data, null, 2));
     const onPressCard = (id) => {
       navigation.navigate("Detail", {
         id,
@@ -88,6 +87,7 @@ function HomeScreen({ navigation }) {
                         {<AntDesign name="arrowup" size={18} color="black" />}
                       </Button>
                     )}
+                    <Text>{post?.likes.length}</Text>
 
                     {arrowDown ? (
                       <Button
