@@ -89,6 +89,7 @@ const resolvers = {
           username,
           password
         );
+        console.log(token);
         return {
           statusCode: 501,
           message: "A token",

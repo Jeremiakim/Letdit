@@ -57,23 +57,24 @@ class User {
   }
   static async findUserByUsername(username, password) {
     try {
-      const user = await this.collection().findOne({ username });
+      const user = await this.collection().findOne({ username, password });
+      // console.log(user);
       if (!user || user.password !== password) {
         throw new GraphQLError("Invalid Email Or Password");
       }
-
       let payload = {
         id: user._id,
         email: user.email,
       };
 
       const token = createToken(payload);
+      // console.log(token);
       return {
         token,
         userId: payload.id,
       };
     } catch (error) {
-      throw new GraphQLError("Failed To Login");
+      throw new GraphQLError(error);
     }
   }
   static async findOneId(id) {
